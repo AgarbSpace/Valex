@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction} from "express"
 
-export default function errorHandlerMiddleware(error, response, request, next){
+export default function errorHandlerMiddleware(error, request: Request, response: Response, next){
 
     if(error.type === "Conflict"){
         return response.sendStatus(409);
@@ -10,5 +10,10 @@ export default function errorHandlerMiddleware(error, response, request, next){
         return response.sendStatus(404);
     }
 
+    if(error.type === "Unprocessable_Entity"){
+        return response.sendStatus(422);
+    }
+
+    console.log(error);
     return response.sendStatus(500);
 }

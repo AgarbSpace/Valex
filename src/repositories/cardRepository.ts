@@ -12,7 +12,7 @@ export interface Card {
   id: number;
   employeeId: number;
   number: string;
-  cardholderName: string;
+  cardHolderName: string;
   securityCode: string;
   expirationDate: string;
   password?: string;
@@ -30,12 +30,17 @@ export async function find() {
   return result.rows;
 }
 
+export async function findByCardNumber(number: string) {
+  
+  const result = await connection.query<Card>("SELECT * FROM cards WHERE number = $1", [number]);
+  return result.rows[0];
+}
+
 export async function findById(id: number) {
   const result = await connection.query<Card, [number]>(
     "SELECT * FROM cards WHERE id=$1",
     [id]
   );
-
   return result.rows[0];
 }
 
@@ -71,7 +76,7 @@ export async function insert(cardData: CardInsertData) {
   const {
     employeeId,
     number,
-    cardholderName,
+    cardHolderName,
     securityCode,
     expirationDate,
     password,
@@ -90,7 +95,7 @@ export async function insert(cardData: CardInsertData) {
     [
       employeeId,
       number,
-      cardholderName,
+      cardHolderName,
       securityCode,
       expirationDate,
       password,
@@ -102,22 +107,18 @@ export async function insert(cardData: CardInsertData) {
   );
 }
 
-export async function update(id: number, cardData: CardUpdateData) {
-  const { objectColumns: cardColumns, objectValues: cardValues } =
-    mapObjectToUpdateQuery({
-      object: cardData,
-      offset: 2,
-    });
+export async function update(id: number, hashedPassword: string) {
 
-  connection.query(
+  await connection.query(
     `
     UPDATE cards
-      SET ${cardColumns}
-    WHERE $1=id
+      SET password=$2, "isBlocked"=false
+    WHERE id=$1
   `,
-    [id, ...cardValues]
+    [id, hashedPassword]
   );
 }
+
 
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
