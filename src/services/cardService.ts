@@ -33,7 +33,7 @@ export async function createCardDetails(employeeId: number, type: string, isVirt
 
     const nameFormated = nameValidation.toString().replace(/,/g, " ");
     const cvc = faker.finance.creditCardCVV();
-
+    console.log(cvc);
     const hashedCvc = bcrypt.hashSync(cvc, 10);
     const cardDetails = {
         employeeId: employeeId,
@@ -56,10 +56,6 @@ export async function insertCard(cardData){
 }
 
 export async function activateCardById(cardData){
-    //if(password.length !== 4){
-        //throw {type: "Unprocessable_Entity", message: "Password must have 4 characters"}
-    //}
-    
     const card = await cardRepository.findById(cardData.cardId);
     if(!card){
         throw {type: "Not_Found", message: "This card was not found"}
