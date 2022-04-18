@@ -14,7 +14,7 @@ export async function findByCardId(cardId: number) {
     [cardId]
   );
 
-  return result.rows;
+  return result.rows[0];
 }
 
 export async function insert(rechargeData: RechargeInsertData) {
